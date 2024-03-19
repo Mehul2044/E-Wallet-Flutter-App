@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wallet_app/screens/documents_screen.dart';
-import 'package:wallet_app/screens/notes_screen.dart';
-import 'package:wallet_app/screens/password_screen.dart';
+
+import '../screens/documents_screen.dart';
+import '../screens/notes/notes_screen.dart';
+import '../screens/password_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});

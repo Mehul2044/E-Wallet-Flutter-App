@@ -1,29 +1,23 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart' hide Key;
+import 'package:flutter/foundation.dart';
 
-import 'package:encrypt/encrypt.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class EncryptProvider with ChangeNotifier {
   late String _secretKey;
-  final _iv = IV.fromLength(16);
 
-  String encrypt(String text) {
-    final key = Key.fromUtf8(_secretKey);
-    final encryptText = Encrypter(AES(key));
-    final encrypted = encryptText.encrypt(text, iv: _iv);
-    return encrypted.base64;
+  Future<String> encrypt(String text) async {
+    String encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(text, _secretKey) as String;
+    return encryptedText;
   }
 
-  String decrypt(String text) {
-    final key = Key.fromUtf8(_secretKey);
-    final encryptText = Encrypter(AES(key));
-    final decrypted = encryptText.decrypt(Encrypted.fromBase64(text), iv: _iv);
-    return decrypted;
+  Future<String> decrypt(String text) async {
+    String decryptedText =
+        await FlutterAesEcbPkcs5.decryptString(text, _secretKey) as String;
+    return decryptedText;
   }
 
   Future<void> fetchAndSetKey() async {
@@ -37,7 +31,7 @@ class EncryptProvider with ChangeNotifier {
         await storage.write(key: "secretKey", value: keyFromDatabase);
         _secretKey = keyFromDatabase;
       } else {
-        String generatedKey = _generateRandomKey();
+        String generatedKey = await _generateRandomKey();
         await _storeKeyInDatabase(generatedKey);
         await storage.write(key: "secretKey", value: generatedKey);
         _secretKey = generatedKey;
@@ -62,9 +56,8 @@ class EncryptProvider with ChangeNotifier {
     await ref.set({"secretKey": secretKey});
   }
 
-  String _generateRandomKey() {
-    final random = Random.secure();
-    final List<int> bytes = List.generate(32, (_) => random.nextInt(256));
-    return base64UrlEncode(bytes).substring(0, 32);
+  Future<String> _generateRandomKey() async {
+    String key = await FlutterAesEcbPkcs5.generateDesKey(128) as String;
+    return key;
   }
 }

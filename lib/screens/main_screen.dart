@@ -23,13 +23,16 @@ class MainScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Your Wallet"),
+        title: const Text("Wallet"),
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, value, _) => Row(
               children: [
-                Text(value.isDark ? "Dark Mode" : "Light Mode"),
-                const SizedBox(width: 10),
+                Text(
+                  value.isDark ? "Dark Mode" : "Light Mode",
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(width: 5),
                 Switch.adaptive(
                     value: value.isDark,
                     onChanged: (state) =>

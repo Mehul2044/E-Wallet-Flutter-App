@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/note_provider.dart';
 import '../provider/encrypt_provider.dart';
 
 import '../screens/login_screen.dart';
@@ -14,13 +16,19 @@ class HomeConfig extends StatelessWidget {
   Widget build(BuildContext context) {
     final encryptProvider =
         Provider.of<EncryptProvider>(context, listen: false);
+    final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+
+    Future<void> loadData() async {
+      await encryptProvider.fetchAndSetKey();
+      await noteProvider.fetchAndSetNotes(encryptProvider);
+    }
 
     return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return FutureBuilder(
-                future: encryptProvider.fetchAndSetKey(),
+                future: loadData(),
                 builder: (context, futureSnapshot) {
                   if (futureSnapshot.connectionState ==
                       ConnectionState.waiting) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -62,8 +63,20 @@ class ProfileScreen extends StatelessWidget {
             margin: EdgeInsets.only(bottom: height * 0.07),
             padding: const EdgeInsets.only(left: 10),
             alignment: Alignment.centerLeft,
-            child: const Text(
-              "* By using our app, you agree to our Terms & Conditions.",
+            child: RichText(
+              text: TextSpan(children: [
+                const TextSpan(
+                    text: "* By using our app, you agree to our\n  "),
+                TextSpan(
+                  text: "Terms & Conditions",
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                  recognizer: TapGestureRecognizer()..onTap = () {},
+                ),
+                const TextSpan(text: "."),
+              ]),
             ),
           ),
           TextButton(
