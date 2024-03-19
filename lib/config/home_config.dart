@@ -21,6 +21,7 @@ class HomeConfig extends StatelessWidget {
     Future<void> loadData() async {
       await encryptProvider.fetchAndSetKey();
       await noteProvider.fetchAndSetNotes(encryptProvider);
+      await Future.delayed(const Duration(milliseconds: 1));
     }
 
     return StreamBuilder(

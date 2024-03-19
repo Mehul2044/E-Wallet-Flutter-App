@@ -20,7 +20,7 @@ class Note {
 
 class NoteProvider with ChangeNotifier {
   bool isLoading = false;
-  final List<Note> _list = [];
+  List<Note> _list = [];
 
   List<Note> get list => [..._list];
 
@@ -55,10 +55,11 @@ class NoteProvider with ChangeNotifier {
     int index = _list.indexWhere((element) => element.noteId == noteId);
     final noteObj = _list[index];
     final newNoteObj = Note(
-        noteId: noteObj.noteId,
-        dateTime: noteObj.dateTime,
-        title: isTitle ? updatedText : noteObj.title,
-        body: !isTitle ? updatedText : noteObj.body);
+      noteId: noteObj.noteId,
+      dateTime: noteObj.dateTime,
+      title: isTitle ? updatedText : noteObj.title,
+      body: !isTitle ? updatedText : noteObj.body,
+    );
     _list[index] = newNoteObj;
     notifyListeners();
     String newText = await encryptProvider.encrypt(updatedText);
@@ -66,26 +67,26 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetNotes(EncryptProvider encryptProvider) async {
+    _list.clear();
     DatabaseReference ref = FirebaseDatabase.instance
         .ref("${FirebaseAuth.instance.currentUser!.uid}/notes");
     DataSnapshot snapshot = await ref.get();
-    if (snapshot.exists) {
-      Map<dynamic, dynamic> notesMap = snapshot.value as Map<dynamic, dynamic>;
-      _list.clear();
-      notesMap.forEach((key, value) async {
-        final decryptedTitle = value['title'].isEmpty
-            ? ""
-            : await encryptProvider.decrypt(value['title']);
-        final decryptedBody = value['body'].isEmpty
-            ? ""
-            : await encryptProvider.decrypt(value['body']);
-        _list.add(Note(
-          noteId: key,
-          dateTime: DateTime.parse(value['dateTime']),
-          title: decryptedTitle,
-          body: decryptedBody,
-        ));
-      });
-    }
+    Map<dynamic, dynamic> notesMap = snapshot.value as Map<dynamic, dynamic>;
+    final List<Note> notes = [];
+    notesMap.forEach((key, value) async {
+      final decryptedTitle = value['title'].isEmpty
+          ? ""
+          : await encryptProvider.decrypt(value['title']);
+      final decryptedBody = value['body'].isEmpty
+          ? ""
+          : await encryptProvider.decrypt(value['body']);
+      notes.add(Note(
+        noteId: key,
+        dateTime: DateTime.parse(value['dateTime']),
+        title: decryptedTitle,
+        body: decryptedBody,
+      ));
+      _list = notes;
+    });
   }
 }
