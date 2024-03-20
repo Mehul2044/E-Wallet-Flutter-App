@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
+import './/provider/password_provider.dart';
 import './provider/note_provider.dart';
 import './provider/encrypt_provider.dart';
 import './provider/sign_in_provider.dart';
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => themeProvider),
         ChangeNotifierProvider(create: (_) => SignInProvider()),
         ChangeNotifierProvider(create: (_) => EncryptProvider()),
-        ChangeNotifierProvider(create: (_) => NoteProvider())
+        ChangeNotifierProvider(create: (_) => NoteProvider()),
+        ChangeNotifierProvider(create: (_) => PasswordProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, value, child) => MaterialApp(

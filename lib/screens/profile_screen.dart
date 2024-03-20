@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/note_provider.dart';
+import '../provider/password_provider.dart';
 import '../provider/sign_in_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -12,6 +14,8 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+    final passwordProvider = Provider.of<PasswordProvider>(context, listen: false);
+    final noteProvider = Provider.of<NoteProvider>(context, listen: false);
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -63,8 +67,8 @@ class ProfileScreen extends StatelessWidget {
             margin: EdgeInsets.only(bottom: height * 0.07),
             padding: const EdgeInsets.only(left: 10),
             alignment: Alignment.centerLeft,
-            child: RichText(
-              text: TextSpan(children: [
+            child: Text.rich(
+              TextSpan(children: [
                 const TextSpan(
                     text: "* By using our app, you agree to our\n  "),
                 TextSpan(
@@ -86,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).pop();
-              signInProvider.signOut();
+              signInProvider.signOut(noteProvider, passwordProvider);
             },
             child: const Text("Sign Out"),
           ),

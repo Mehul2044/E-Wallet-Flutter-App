@@ -19,6 +19,7 @@ class Note {
 }
 
 class NoteProvider with ChangeNotifier {
+  bool _isDataLoaded = false;
   bool isLoading = false;
   List<Note> _list = [];
 
@@ -67,26 +68,37 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetNotes(EncryptProvider encryptProvider) async {
+    if (_isDataLoaded) return;
     _list.clear();
+    final List<Note> notes = [];
     DatabaseReference ref = FirebaseDatabase.instance
         .ref("${FirebaseAuth.instance.currentUser!.uid}/notes");
     DataSnapshot snapshot = await ref.get();
-    Map<dynamic, dynamic> notesMap = snapshot.value as Map<dynamic, dynamic>;
-    final List<Note> notes = [];
-    notesMap.forEach((key, value) async {
-      final decryptedTitle = value['title'].isEmpty
-          ? ""
-          : await encryptProvider.decrypt(value['title']);
-      final decryptedBody = value['body'].isEmpty
-          ? ""
-          : await encryptProvider.decrypt(value['body']);
-      notes.add(Note(
-        noteId: key,
-        dateTime: DateTime.parse(value['dateTime']),
-        title: decryptedTitle,
-        body: decryptedBody,
-      ));
-      _list = notes;
-    });
+    if (snapshot.exists) {
+      Map<dynamic, dynamic> notesMap = snapshot.value as Map<dynamic, dynamic>;
+      for (var entry in notesMap.entries) {
+        var key = entry.key;
+        var value = entry.value;
+        final decryptedTitle = value['title'].isEmpty
+            ? ""
+            : await encryptProvider.decrypt(value['title']);
+        final decryptedBody = value['body'].isEmpty
+            ? ""
+            : await encryptProvider.decrypt(value['body']);
+        notes.add(Note(
+          noteId: key,
+          dateTime: DateTime.parse(value['dateTime']),
+          title: decryptedTitle,
+          body: decryptedBody,
+        ));
+      }
+    }
+    _list = notes;
+    _isDataLoaded = true;
+  }
+
+  void signOut() {
+    _list.clear();
+    _isDataLoaded = false;
   }
 }

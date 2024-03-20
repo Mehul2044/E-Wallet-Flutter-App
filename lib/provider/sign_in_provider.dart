@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wallet_app/provider/note_provider.dart';
+import 'package:wallet_app/provider/password_provider.dart';
 
 class SignInProvider with ChangeNotifier {
   bool isLoading = false;
@@ -35,11 +37,14 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(
+      NoteProvider noteProvider, PasswordProvider passwordProvider) async {
     isLoading = true;
     notifyListeners();
     const storage = FlutterSecureStorage();
     await storage.delete(key: "secretKey");
+    noteProvider.signOut();
+    passwordProvider.signOut();
     await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
     isLoading = false;
