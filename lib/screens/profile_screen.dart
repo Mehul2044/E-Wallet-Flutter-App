@@ -14,7 +14,8 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
-    final passwordProvider = Provider.of<PasswordProvider>(context, listen: false);
+    final passwordProvider =
+        Provider.of<PasswordProvider>(context, listen: false);
     final noteProvider = Provider.of<NoteProvider>(context, listen: false);
     final height = MediaQuery.of(context).size.height;
 
@@ -30,7 +31,10 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: Colors.purple,
               child: Text(
                 FirebaseAuth.instance.currentUser!.displayName!.substring(0, 1),
-                style: Theme.of(context).textTheme.displayMedium,
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium
+                    ?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -73,10 +77,7 @@ class ProfileScreen extends StatelessWidget {
                     text: "* By using our app, you agree to our\n  "),
                 TextSpan(
                   text: "Terms & Conditions",
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: const TextStyle(color: Colors.blue),
                   recognizer: TapGestureRecognizer()..onTap = () {},
                 ),
                 const TextSpan(text: "."),

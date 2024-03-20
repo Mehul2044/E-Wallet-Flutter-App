@@ -11,14 +11,14 @@ import '../screens/notes/notes_screen.dart';
 import '../screens/passwords/password_screen.dart';
 import '../screens/profile_screen.dart';
 
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+class MainScaffold extends StatefulWidget {
+  const MainScaffold({super.key});
 
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _MainScaffoldState extends State<MainScaffold> {
   int _selectedIndex = 0;
 
   static const List<Widget> _screens = [
