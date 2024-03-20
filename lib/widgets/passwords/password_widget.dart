@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../provider/encrypt_provider.dart';
 import '../../provider/password_provider.dart';
+
+import '../../widgets/passwords/update_password_modal.dart';
+
+enum Options { copy, edit }
 
 class PasswordWidget extends StatelessWidget {
   final Password passwordObj;
+  final PasswordProvider passwordProvider;
+  final EncryptProvider encryptProvider;
 
-  const PasswordWidget({super.key, required this.passwordObj});
+  const PasswordWidget(
+      {super.key,
+      required this.passwordObj,
+      required this.passwordProvider,
+      required this.encryptProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +30,75 @@ class PasswordWidget extends StatelessWidget {
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: ListTile(
-        leading: Text(passwordObj.title),
-        title: Text(passwordObj.userId),
-        subtitle: Text(passwordObj.password),
-        trailing: IconButton(
-          onPressed: () async {
-            await Clipboard.setData(ClipboardData(text: passwordObj.password));
-            Fluttertoast.showToast(msg: "Password copied to Clipboard");
+        onTap: () => showAdaptiveDialog(
+          context: context,
+          builder: (_) => AlertDialog.adaptive(
+            title: Text(passwordObj.userId),
+            content: Text(passwordObj.password),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Okay"),
+              )
+            ],
+          ),
+        ),
+        leading: Text(
+          passwordObj.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        title: Text(
+          passwordObj.userId,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          passwordObj.password,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: PopupMenuButton(
+          onSelected: (Options selectedValue) async {
+            if (selectedValue == Options.edit) {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (_) => UpdatePasswordModal(
+                      passwordProvider: passwordProvider,
+                      encryptProvider: encryptProvider,
+                      passwordId: passwordObj.id,
+                      initialValue: passwordObj.password));
+            } else if (selectedValue == Options.copy) {
+              await Clipboard.setData(
+                  ClipboardData(text: passwordObj.password));
+              Fluttertoast.showToast(msg: "Password copied to Clipboard");
+            }
           },
-          icon: const Icon(Icons.copy),
+          itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: Options.copy,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(Icons.copy),
+                  SizedBox(width: 10),
+                  Text("Copy"),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: Options.edit,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(Icons.edit),
+                  SizedBox(width: 10),
+                  Text("Edit"),
+                ],
+              ),
+            ),
+          ],
+          icon: const Icon(Icons.more_vert),
         ),
       ),
     );

@@ -37,8 +37,12 @@ class _UpdatePasswordModalState extends State<UpdatePasswordModal> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        top: 20,
+        left: 20,
+        right: 20,
+      ),
       child: Form(
         key: _formKey,
         child: Column(
