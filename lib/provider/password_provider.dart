@@ -24,15 +24,17 @@ class PasswordProvider with ChangeNotifier {
 
   List<Password> get list => [..._list];
 
-  Future<void> addPassword(String title, String userId, String password) async {
+  Future<void> addPassword(String title, String userId, String password,
+      EncryptProvider encryptProvider) async {
     isLoading = true;
     notifyListeners();
     DatabaseReference ref = FirebaseDatabase.instance
         .ref("${FirebaseAuth.instance.currentUser!.uid}/passwords");
     DatabaseReference passwordRef = ref.push();
     String passwordId = passwordRef.key!;
+    String encryptedPassword = await encryptProvider.encrypt(password);
     await passwordRef
-        .set({"title": title, "userId": userId, "password": password});
+        .set({"title": title, "userId": userId, "password": encryptedPassword});
     _list.add(Password(
         id: passwordId, title: title, userId: userId, password: password));
     isLoading = false;
@@ -42,7 +44,13 @@ class PasswordProvider with ChangeNotifier {
   Future<void> updatePassword(
       String title, String userId, String password) async {}
 
-  Future<void> deletePassword(String passwordId) async {}
+  Future<void> deletePassword(String passwordId) async {
+    _list.removeWhere((element) => element.id == passwordId);
+    notifyListeners();
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref("${FirebaseAuth.instance.currentUser!.uid}/passwords/$passwordId");
+    await ref.remove();
+  }
 
   Future<void> fetchAndSetPasswords(EncryptProvider encryptProvider) async {
     if (_isDataLoaded) return;
@@ -60,10 +68,11 @@ class PasswordProvider with ChangeNotifier {
         final decryptedPassword =
             await encryptProvider.decrypt(value['password']);
         passwordList.add(Password(
-            id: key,
-            title: value['title'],
-            userId: value['userId'],
-            password: decryptedPassword));
+          id: key,
+          title: value['title'],
+          userId: value['userId'],
+          password: decryptedPassword,
+        ));
       }
     }
     _list = passwordList;

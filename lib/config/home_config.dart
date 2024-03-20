@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import '../provider/encrypt_provider.dart';
 
 import '../screens/login_screen.dart';
-import '../screens/main_screen.dart';
+
+import '../widgets/bottom_nav_bar.dart';
 
 class HomeConfig extends StatelessWidget {
   const HomeConfig({super.key});
@@ -28,7 +29,7 @@ class HomeConfig extends StatelessWidget {
                     return const Scaffold(
                         body: Center(child: CircularProgressIndicator()));
                   }
-                  return const MainScreen();
+                  return const BottomNavBar();
                 });
           } else {
             return const LoginScreen();
