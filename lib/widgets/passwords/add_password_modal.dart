@@ -53,15 +53,28 @@ class _PasswordAddModalState extends State<PasswordAddModal> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              decoration:
-                  const InputDecoration(labelText: "Website/Application Name"),
+              decoration: const InputDecoration(
+                labelText: "Website/Application Name",
+                suffixIcon: Tooltip(
+                  message:
+                      "The place for which you want to save your log in details.",
+                  child: Icon(Icons.info_outline),
+                ),
+              ),
               validator: _validatorFunction,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               onSaved: (value) => title = value!,
             ),
             const SizedBox(height: 10),
             TextFormField(
-              decoration: const InputDecoration(labelText: "UserID"),
+              decoration: const InputDecoration(
+                labelText: "User ID",
+                suffixIcon: Tooltip(
+                  message:
+                      "It may consist of anything which you need to identify yourself while logging in like your Email, unique User ID, Phone Number, etc",
+                  child: Icon(Icons.info_outline),
+                ),
+              ),
               validator: _validatorFunction,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               onSaved: (value) => userId = value!,

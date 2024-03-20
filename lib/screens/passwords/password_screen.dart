@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../provider/encrypt_provider.dart';
 import '../../provider/password_provider.dart';
 
+import '../../widgets/passwords/update_password_modal.dart';
 import '../../widgets/passwords/add_password_modal.dart';
 import '../../widgets/passwords/password_widget.dart';
 
@@ -69,8 +70,21 @@ class PasswordScreen extends StatelessWidget {
                         direction: DismissDirection.horizontal,
                         onDismissed: (_) => passwordProvider
                             .deletePassword(passwordProvider.list[index].id),
-                        child: PasswordWidget(
-                            passwordObj: passwordProvider.list[index]),
+                        child: GestureDetector(
+                          onTap: () => showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                UpdatePasswordModal(
+                              passwordProvider: passwordProvider,
+                              encryptProvider: encryptProvider,
+                              passwordId: passwordProvider.list[index].id,
+                              initialValue:
+                                  passwordProvider.list[index].password,
+                            ),
+                          ),
+                          child: PasswordWidget(
+                              passwordObj: passwordProvider.list[index]),
+                        ),
                       ),
                       itemCount: passwordProvider.list.length,
                     ),

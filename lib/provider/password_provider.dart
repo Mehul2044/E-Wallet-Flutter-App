@@ -41,8 +41,22 @@ class PasswordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePassword(
-      String title, String userId, String password) async {}
+  Future<void> updatePassword(String passwordId, String password,
+      EncryptProvider encryptProvider) async {
+    DatabaseReference ref = FirebaseDatabase.instance
+        .ref("${FirebaseAuth.instance.currentUser!.uid}/passwords/$passwordId");
+    int index = _list.indexWhere((element) => element.id == passwordId);
+    final passwordObj = _list[index];
+    final newPasswordObj = Password(
+        id: passwordId,
+        title: passwordObj.title,
+        userId: passwordObj.userId,
+        password: password);
+    _list[index] = newPasswordObj;
+    notifyListeners();
+    String newPassword = await encryptProvider.encrypt(password);
+    await ref.update({"password": newPassword});
+  }
 
   Future<void> deletePassword(String passwordId) async {
     _list.removeWhere((element) => element.id == passwordId);
