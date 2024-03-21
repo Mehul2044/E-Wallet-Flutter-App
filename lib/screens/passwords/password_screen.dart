@@ -87,7 +87,7 @@ class PasswordScreen extends StatelessWidget {
     await showDialog(
         barrierDismissible: false,
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => AlertDialog.adaptive(
               title: const Text("Confirm Delete"),
               content: const Text("Are you sure you want to delete the note?"),
               actions: [

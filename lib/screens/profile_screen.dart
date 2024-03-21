@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/document_provider.dart';
 import '../provider/note_provider.dart';
 import '../provider/password_provider.dart';
 import '../provider/sign_in_provider.dart';
@@ -17,6 +18,9 @@ class ProfileScreen extends StatelessWidget {
     final passwordProvider =
         Provider.of<PasswordProvider>(context, listen: false);
     final noteProvider = Provider.of<NoteProvider>(context, listen: false);
+    final documentProvider =
+        Provider.of<DocumentProvider>(context, listen: false);
+
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -91,7 +95,8 @@ class ProfileScreen extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).pop();
-              signInProvider.signOut(noteProvider, passwordProvider);
+              signInProvider.signOut(
+                  noteProvider, passwordProvider, documentProvider);
             },
             child: const Text("Sign Out"),
           ),

@@ -14,7 +14,7 @@ import '../../widgets/notes/input_area_widget.dart';
 class NotesDetailScreen extends StatelessWidget {
   const NotesDetailScreen({super.key});
 
-  String formatDateTime(DateTime dateTime) {
+  String _formatDateTime(DateTime dateTime) {
     String formattedDate = DateFormat('d MMMM, y').format(dateTime);
     String formattedTime = DateFormat('h:mm a').format(dateTime);
     return "Created on $formattedDate at $formattedTime";
@@ -126,7 +126,7 @@ class NotesDetailScreen extends StatelessWidget {
                 updateFunction: noteProvider.updateNote,
               ),
               Text(
-                formatDateTime(obj.dateTime),
+                _formatDateTime(obj.dateTime),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               const SizedBox(height: 20),

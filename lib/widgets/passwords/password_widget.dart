@@ -33,8 +33,20 @@ class PasswordWidget extends StatelessWidget {
         onTap: () => showAdaptiveDialog(
           context: context,
           builder: (_) => AlertDialog.adaptive(
-            content: Text(
-                "User ID:\n${passwordObj.userId}\n\nPassword:\n${passwordObj.password}"),
+            content: Text.rich(
+              TextSpan(children: [
+                const TextSpan(
+                  text: "User ID:\n",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: passwordObj.id),
+                const TextSpan(
+                  text: "\n\nPassword:\n",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: passwordObj.password),
+              ]),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
