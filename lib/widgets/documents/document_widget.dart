@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file_plus/open_file_plus.dart';
@@ -31,8 +32,15 @@ class DocumentWidget extends StatelessWidget {
   }
 
   Future<bool> _saveFile(File file, String fileName) async {
-    final permission =
-        await Permission.storage.request().isGranted;
+    late bool permission;
+    if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      int sdkInt = androidInfo.version.sdkInt;
+      permission =
+          sdkInt > 28 || (await Permission.storage.request().isGranted);
+    } else if (Platform.isIOS) {
+      permission = await Permission.storage.request().isGranted;
+    }
     if (permission) {
       String newPath = '';
       Directory storageDir = (await getExternalStorageDirectory())!;
@@ -89,7 +97,9 @@ class DocumentWidget extends StatelessWidget {
               if (result) {
                 Fluttertoast.showToast(msg: "File was saved in Documents.");
               } else {
-                Fluttertoast.showToast(msg: "Permission Denied for saving File. Grant permission in the App Settings.");
+                Fluttertoast.showToast(
+                    msg:
+                        "Permission Denied for saving File. Grant permission in the App Settings.");
               }
             } else if (selectedValue == Options.rename) {}
           },
