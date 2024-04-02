@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +12,8 @@ import '../screens/documents/documents_screen.dart';
 import '../screens/notes/notes_screen.dart';
 import '../screens/passwords/password_screen.dart';
 import '../screens/profile_screen.dart';
+
+enum ThemeOptions { dark, light }
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -46,18 +50,30 @@ class _MainScaffoldState extends State<MainScaffold> {
         title: Text(_titles[_selectedIndex]),
         actions: [
           Consumer<ThemeProvider>(
-            builder: (context, value, _) => Row(
-              children: [
-                Text(
-                  value.isDark ? "Dark Mode" : "Light Mode",
-                  style: Theme.of(context).textTheme.bodySmall,
+            builder: (context, value, _) => SegmentedButton(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(
+                  value: ThemeOptions.dark,
+                  label: Text("Dark"),
+                  icon: Icon(Icons.dark_mode),
                 ),
-                const SizedBox(width: 5),
-                Switch.adaptive(
-                    value: value.isDark,
-                    onChanged: (state) =>
-                        state ? value.setDarkMode() : value.setLightMode()),
+                ButtonSegment(
+                  value: ThemeOptions.light,
+                  label: Text("Light"),
+                  icon: Icon(Icons.light_mode),
+                ),
               ],
+              selected: <ThemeOptions>{
+                value.isDark ? ThemeOptions.dark : ThemeOptions.light
+              },
+              onSelectionChanged: (Set<ThemeOptions> selectedValue) {
+                if (selectedValue.first == ThemeOptions.dark) {
+                  value.setDarkMode();
+                } else {
+                  value.setLightMode();
+                }
+              },
             ),
           ),
           const SizedBox(width: 20),

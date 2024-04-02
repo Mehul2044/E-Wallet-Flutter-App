@@ -1,13 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file_plus/open_file_plus.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/document_provider.dart';
 
@@ -17,6 +10,7 @@ class DocumentWidget extends StatelessWidget {
   final Document documentObj;
 
   const DocumentWidget({super.key, required this.documentObj});
+
 
   IconData _getIconForFileExtension(String extension) {
     switch (extension) {
@@ -31,36 +25,7 @@ class DocumentWidget extends StatelessWidget {
     }
   }
 
-  Future<bool> _saveFile(File file, String fileName) async {
-    late bool permission;
-    if (Platform.isAndroid) {
-      var androidInfo = await DeviceInfoPlugin().androidInfo;
-      int sdkInt = androidInfo.version.sdkInt;
-      permission =
-          sdkInt > 28 || (await Permission.storage.request().isGranted);
-    } else if (Platform.isIOS) {
-      permission = await Permission.storage.request().isGranted;
-    }
-    if (permission) {
-      String newPath = '';
-      Directory storageDir = (await getExternalStorageDirectory())!;
-      List<String> folders = storageDir.path.split("/");
-      for (int x = 1; x < folders.length; x++) {
-        String folder = folders[x];
-        if (folder != 'Android') {
-          newPath += '/$folder';
-        } else {
-          break;
-        }
-      }
-      newPath = "$newPath/Documents";
-      await Directory(newPath).create();
-      await file.copy("$newPath/$fileName");
-      return true;
-    } else {
-      return false;
-    }
-  }
+  void _saveFile(String downloadUrl) {}
 
   String _formatDateTime(DateTime dateTime) {
     String formattedDate = DateFormat('d MMMM, y').format(dateTime);
@@ -70,7 +35,7 @@ class DocumentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String fileName = documentObj.file.path.split('/').last;
+    String fileName = documentObj.fileName;
     String extension = fileName.split('.').last;
     IconData iconData = _getIconForFileExtension(extension);
 
@@ -81,9 +46,7 @@ class DocumentWidget extends StatelessWidget {
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: ListTile(
-        onTap: () async {
-          await OpenFile.open(documentObj.file.path);
-        },
+        onTap: () async {},
         title: Text(fileName, maxLines: 1, overflow: TextOverflow.ellipsis),
         leading: Icon(iconData),
         subtitle: Text(
@@ -93,14 +56,7 @@ class DocumentWidget extends StatelessWidget {
         trailing: PopupMenuButton(
           onSelected: (Options selectedValue) async {
             if (selectedValue == Options.download) {
-              final result = await _saveFile(documentObj.file, fileName);
-              if (result) {
-                Fluttertoast.showToast(msg: "File was saved in Documents.");
-              } else {
-                Fluttertoast.showToast(
-                    msg:
-                        "Permission Denied for saving File. Grant permission in the App Settings.");
-              }
+              _saveFile(documentObj.downloadUrl);
             } else if (selectedValue == Options.rename) {}
           },
           itemBuilder: (_) => [

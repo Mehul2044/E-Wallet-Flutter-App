@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class Document {
-  final File file;
+  final String fileName;
   final DateTime dateTime;
+  final String downloadUrl;
 
-  Document({required this.file, required this.dateTime});
+  Document(
+      {required this.downloadUrl,
+      required this.fileName,
+      required this.dateTime});
 }
 
 class DocumentProvider with ChangeNotifier {
@@ -35,9 +37,14 @@ class DocumentProvider with ChangeNotifier {
         final storageRef = FirebaseStorage.instance
             .ref(FirebaseAuth.instance.currentUser!.uid);
         for (var file in files) {
-          final docRef = storageRef.child(file.path.split('/').last);
+          String fileName = file.path.split('/').last;
+          final docRef = storageRef.child(fileName);
           await docRef.putFile(file);
-          _list.add(Document(file: file, dateTime: DateTime.now()));
+          String downloadUrl = await docRef.getDownloadURL();
+          _list.add(Document(
+              fileName: fileName,
+              dateTime: DateTime.now(),
+              downloadUrl: downloadUrl));
         }
       }
     } catch (e) {
@@ -58,20 +65,11 @@ class DocumentProvider with ChangeNotifier {
       final metadata = await item.getMetadata();
       final uploadTime = metadata.timeCreated ?? DateTime.now();
       final downloadUrl = await item.getDownloadURL();
-      final File file = await _downloadFile(downloadUrl, metadata.name);
-      _list.add(Document(file: file, dateTime: uploadTime));
+      final fileName = metadata.name;
+      _list.add(Document(
+          downloadUrl: downloadUrl, fileName: fileName, dateTime: uploadTime));
     }
     _isDataFetched = true;
-  }
-
-  Future<File> _downloadFile(String downloadUrl, String fileName) async {
-    final url = Uri.parse(downloadUrl);
-    final response = await http.get(url);
-    final directory = await getTemporaryDirectory();
-    final filePath = "${directory.path}/$fileName";
-    final file = File(filePath);
-    await file.writeAsBytes(response.bodyBytes);
-    return file;
   }
 
   void signOut() {
