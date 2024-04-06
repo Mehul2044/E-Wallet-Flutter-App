@@ -36,53 +36,55 @@ class _UpdatePasswordModalState extends State<UpdatePasswordModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 20,
-        left: 20,
-        right: 20,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: "Enter New Password",
-                hintText: widget.initialValue,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          top: 10,
+          left: 20,
+          right: 20,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Enter New Password",
+                  hintText: widget.initialValue,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a valid value!";
+                  }
+                  return null;
+                },
+                onSaved: (value) => password = value!,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter a valid value!";
-                }
-                return null;
-              },
-              onSaved: (value) => password = value!,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel"),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    bool result = _formSave();
-                    if (result) Navigator.of(context).pop();
-                  },
-                  child: const Text("Update Password"),
-                ),
-                const SizedBox(width: 20),
-              ],
-            ),
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Cancel"),
+                  ),
+                  const SizedBox(width: 20),
+                  TextButton(
+                    onPressed: () {
+                      bool result = _formSave();
+                      if (result) Navigator.of(context).pop();
+                    },
+                    child: const Text("Update Password"),
+                  ),
+                  const SizedBox(width: 20),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

@@ -39,7 +39,7 @@ class PasswordWidget extends StatelessWidget {
                   text: "User ID:\n",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: passwordObj.id),
+                TextSpan(text: passwordObj.userId),
                 const TextSpan(
                   text: "\n\nPassword:\n",
                   style: TextStyle(fontWeight: FontWeight.bold),
