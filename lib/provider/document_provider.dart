@@ -38,6 +38,12 @@ class DocumentProvider with ChangeNotifier {
             .ref(FirebaseAuth.instance.currentUser!.uid);
         for (var file in files) {
           String fileName = file.path.split('/').last;
+          if (_list.any((element) => element.fileName == fileName)) {
+            scaffoldMessenger.showSnackBar(SnackBar(
+                content: Text(
+                    "File with name $fileName already exists. This file will not be uploaded.")));
+            continue;
+          }
           final docRef = storageRef.child(fileName);
           await docRef.putFile(file);
           String downloadUrl = await docRef.getDownloadURL();
@@ -53,6 +59,15 @@ class DocumentProvider with ChangeNotifier {
     }
     isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> deleteFile(String fileName) async {
+    _list.removeWhere((element) => element.fileName == fileName);
+    notifyListeners();
+    final storageRef = FirebaseStorage.instance
+        .ref(FirebaseAuth.instance.currentUser!.uid)
+        .child(fileName);
+    await storageRef.delete();
   }
 
   Future<void> fetchAndSetDocuments() async {

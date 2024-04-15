@@ -8,10 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../provider/document_provider.dart';
 
-enum Options { rename, download }
+enum Options { download, delete }
 
 class DocumentWidget extends StatefulWidget {
   final Document documentObj;
@@ -72,6 +73,9 @@ class _DocumentWidgetState extends State<DocumentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final documentProvider =
+        Provider.of<DocumentProvider>(context, listen: false);
+
     String fileName = widget.documentObj.fileName;
     String extension = fileName.split('.').last;
     IconData iconData = _getIconForFileExtension(extension);
@@ -85,8 +89,11 @@ class _DocumentWidgetState extends State<DocumentWidget> {
       child: ListTile(
         onTap: _isLoading
             ? null
-            : () => _openFile(
-                widget.documentObj.downloadUrl, widget.documentObj.fileName),
+            : () {
+                Fluttertoast.showToast(msg: "Opening...");
+                _openFile(widget.documentObj.downloadUrl,
+                    widget.documentObj.fileName);
+              },
         title: Text(fileName, maxLines: 1, overflow: TextOverflow.ellipsis),
         leading:
             _isLoading ? const CircularProgressIndicator() : Icon(iconData),
@@ -99,19 +106,11 @@ class _DocumentWidgetState extends State<DocumentWidget> {
             if (selectedValue == Options.download) {
               _saveFile(
                   widget.documentObj.downloadUrl, widget.documentObj.fileName);
-            } else if (selectedValue == Options.rename) {}
+            } else if (selectedValue == Options.delete) {
+              await documentProvider.deleteFile(fileName);
+            }
           },
           itemBuilder: (_) => [
-            const PopupMenuItem(
-              value: Options.rename,
-              child: Row(
-                children: [
-                  Icon(Icons.drive_file_rename_outline),
-                  SizedBox(width: 10),
-                  Text("Rename File"),
-                ],
-              ),
-            ),
             const PopupMenuItem(
               value: Options.download,
               child: Row(
@@ -119,6 +118,16 @@ class _DocumentWidgetState extends State<DocumentWidget> {
                   Icon(Icons.download),
                   SizedBox(width: 10),
                   Text("Download"),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: Options.delete,
+              child: Row(
+                children: [
+                  Icon(Icons.delete),
+                  SizedBox(width: 10),
+                  Text("Delete"),
                 ],
               ),
             ),

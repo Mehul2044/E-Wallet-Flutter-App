@@ -8,7 +8,7 @@ import '../../provider/password_provider.dart';
 
 import '../../widgets/passwords/update_password_modal.dart';
 
-enum Options { copy, edit }
+enum Options { copy, edit, delete }
 
 class PasswordWidget extends StatelessWidget {
   final Password passwordObj;
@@ -84,6 +84,8 @@ class PasswordWidget extends StatelessWidget {
               await Clipboard.setData(
                   ClipboardData(text: passwordObj.password));
               Fluttertoast.showToast(msg: "Password copied to Clipboard");
+            } else if (selectedValue == Options.delete) {
+              passwordProvider.deletePassword(passwordObj.id);
             }
           },
           itemBuilder: (_) => [
@@ -106,6 +108,17 @@ class PasswordWidget extends StatelessWidget {
                   Icon(Icons.edit),
                   SizedBox(width: 10),
                   Text("Edit"),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: Options.delete,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(Icons.delete),
+                  SizedBox(width: 10),
+                  Text("Delete"),
                 ],
               ),
             ),

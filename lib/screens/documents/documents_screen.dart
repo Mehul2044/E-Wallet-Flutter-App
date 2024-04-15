@@ -28,13 +28,15 @@ class DocumentsScreen extends StatelessWidget {
         } else {
           return Consumer<DocumentProvider>(
             builder: (context, provider, _) => Scaffold(
-              floatingActionButton: provider.isLoading
-                  ? const CircularProgressIndicator()
-                  : FloatingActionButton(
-                      onPressed: () =>
-                          _addFilesHandler(documentProvider, context),
-                      child: const Icon(Icons.add),
-                    ),
+              floatingActionButton: documentProvider.list.isEmpty
+                  ? null
+                  : provider.isLoading
+                      ? const CircularProgressIndicator()
+                      : FloatingActionButton(
+                          onPressed: () =>
+                              _addFilesHandler(documentProvider, context),
+                          child: const Icon(Icons.add),
+                        ),
               body: documentProvider.list.isEmpty
                   ? Center(
                       child: documentProvider.isLoading
@@ -53,8 +55,15 @@ class DocumentsScreen extends StatelessWidget {
                             ),
                     )
                   : ListView.builder(
-                      itemBuilder: (context, index) =>
-                          DocumentWidget(documentObj: provider.list[index]),
+                      itemBuilder: (context, index) => Dismissible(
+                        key: Key(provider.list[index].fileName),
+                        direction: DismissDirection.horizontal,
+                        confirmDismiss: (_) => _confirmDismissDelete(context),
+                        onDismissed: (_) =>
+                            provider.deleteFile(provider.list[index].fileName),
+                        child:
+                            DocumentWidget(documentObj: provider.list[index]),
+                      ),
                       itemCount: provider.list.length,
                     ),
             ),
@@ -62,5 +71,32 @@ class DocumentsScreen extends StatelessWidget {
         }
       },
     );
+  }
+
+  Future<bool> _confirmDismissDelete(BuildContext context) async {
+    late bool returnValue;
+    await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog.adaptive(
+              title: const Text("Confirm Delete"),
+              content: const Text("Are you sure you want to delete the note?"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    returnValue = true;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Yes, delete"),
+                ),
+                TextButton(
+                    onPressed: () {
+                      returnValue = false;
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("No")),
+              ],
+            ));
+    return returnValue;
   }
 }
