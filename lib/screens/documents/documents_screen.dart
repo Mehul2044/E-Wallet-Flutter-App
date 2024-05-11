@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/document_provider.dart';
@@ -12,6 +13,37 @@ class DocumentsScreen extends StatelessWidget {
   Future<void> _addFilesHandler(
       DocumentProvider documentProvider, BuildContext context) async {
     await documentProvider.addFiles(context);
+  }
+
+  void _addDocumentModal(
+      BuildContext context, DocumentProvider documentProvider) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("Add From..."),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _addFilesHandler(documentProvider, context);
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: const Text("Gallery"),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.scanner),
+                  label: const Text("Camera"),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -30,14 +62,39 @@ class DocumentsScreen extends StatelessWidget {
         } else {
           return Consumer<DocumentProvider>(
             builder: (context, provider, _) => Scaffold(
+              floatingActionButtonLocation:
+                  provider.isLoading || documentProvider.list.isEmpty
+                      ? null
+                      : ExpandableFab.location,
               floatingActionButton: documentProvider.list.isEmpty
                   ? null
                   : provider.isLoading
                       ? const CircularProgressIndicator()
-                      : FloatingActionButton(
-                          onPressed: () =>
-                              _addFilesHandler(documentProvider, context),
-                          child: const Icon(Icons.add),
+                      : ExpandableFab(
+                          distance: 75.0,
+                          type: ExpandableFabType.up,
+                          openButtonBuilder: RotateFloatingActionButtonBuilder(
+                            child: const Icon(Icons.add),
+                            fabSize: ExpandableFabSize.regular,
+                          ),
+                          closeButtonBuilder: RotateFloatingActionButtonBuilder(
+                            child: const Icon(Icons.close),
+                            fabSize: ExpandableFabSize.regular,
+                          ),
+                          children: [
+                            FloatingActionButton.small(
+                              tooltip: "Add from Gallery",
+                              onPressed: () {
+                                _addFilesHandler(documentProvider, context);
+                              },
+                              child: const Icon(Icons.photo_library_outlined),
+                            ),
+                            FloatingActionButton.small(
+                              tooltip: "Scan a New Document",
+                              onPressed: () {},
+                              child: const Icon(Icons.scanner),
+                            ),
+                          ],
                         ),
               body: documentProvider.list.isEmpty
                   ? Center(
@@ -48,8 +105,8 @@ class DocumentsScreen extends StatelessWidget {
                               children: [
                                 const Text("No Documents to Display"),
                                 TextButton.icon(
-                                  onPressed: () => _addFilesHandler(
-                                      documentProvider, context),
+                                  onPressed: () => _addDocumentModal(
+                                      context, documentProvider),
                                   icon: const Icon(Icons.add),
                                   label: const Text("Add new Document"),
                                 ),
