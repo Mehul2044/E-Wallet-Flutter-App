@@ -28,7 +28,9 @@ class PasswordScreen extends StatelessWidget {
     final encryptProvider =
         Provider.of<EncryptProvider>(context, listen: false);
     return FutureBuilder(
-        future: passProvider.fetchAndSetPasswords(encryptProvider),
+        future: passProvider.isDataLoaded
+            ? null
+            : passProvider.fetchAndSetPasswords(encryptProvider),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(

@@ -19,7 +19,9 @@ class NotesScreen extends StatelessWidget {
         Provider.of<EncryptProvider>(context, listen: false);
 
     return FutureBuilder(
-      future: noteProvider.fetchAndSetNotes(encryptProvider),
+      future: noteProvider.isDataLoaded
+          ? null
+          : noteProvider.fetchAndSetNotes(encryptProvider),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

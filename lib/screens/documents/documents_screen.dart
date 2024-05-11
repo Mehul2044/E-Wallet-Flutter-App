@@ -20,7 +20,9 @@ class DocumentsScreen extends StatelessWidget {
         Provider.of<DocumentProvider>(context, listen: false);
 
     return FutureBuilder(
-      future: documentProvider.fetchAndSetDocuments(),
+      future: documentProvider.isDataFetched
+          ? null
+          : documentProvider.fetchAndSetDocuments(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

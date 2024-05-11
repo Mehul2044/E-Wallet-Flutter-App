@@ -18,7 +18,7 @@ class Password {
 }
 
 class PasswordProvider with ChangeNotifier {
-  bool _isDataLoaded = false;
+  bool isDataLoaded = false;
   bool isLoading = false;
   List<Password> _list = [];
 
@@ -67,7 +67,7 @@ class PasswordProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetPasswords(EncryptProvider encryptProvider) async {
-    if (_isDataLoaded) return;
+    if (isDataLoaded) return;
     _list.clear();
     final List<Password> passwordList = [];
     DatabaseReference ref = FirebaseDatabase.instance
@@ -90,11 +90,11 @@ class PasswordProvider with ChangeNotifier {
       }
     }
     _list = passwordList;
-    _isDataLoaded = true;
+    isDataLoaded = true;
   }
 
   void signOut() {
     _list.clear();
-    _isDataLoaded = false;
+    isDataLoaded = false;
   }
 }

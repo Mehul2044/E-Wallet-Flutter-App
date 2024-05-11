@@ -19,7 +19,7 @@ class Note {
 }
 
 class NoteProvider with ChangeNotifier {
-  bool _isDataLoaded = false;
+  bool isDataLoaded = false;
   bool isLoading = false;
   List<Note> _list = [];
 
@@ -68,7 +68,7 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetNotes(EncryptProvider encryptProvider) async {
-    if (_isDataLoaded) return;
+    if (isDataLoaded) return;
     _list.clear();
     final List<Note> notes = [];
     DatabaseReference ref = FirebaseDatabase.instance
@@ -94,11 +94,11 @@ class NoteProvider with ChangeNotifier {
       }
     }
     _list = notes;
-    _isDataLoaded = true;
+    isDataLoaded = true;
   }
 
   void signOut() {
     _list.clear();
-    _isDataLoaded = false;
+    isDataLoaded = false;
   }
 }

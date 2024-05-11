@@ -19,7 +19,7 @@ class Document {
 
 class DocumentProvider with ChangeNotifier {
   bool isLoading = false;
-  bool _isDataFetched = false;
+  bool isDataFetched = false;
 
   final List<Document> _list = [];
 
@@ -71,7 +71,7 @@ class DocumentProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetDocuments() async {
-    if (_isDataFetched) return;
+    if (isDataFetched) return;
     _list.clear();
     final storageRef =
         FirebaseStorage.instance.ref(FirebaseAuth.instance.currentUser!.uid);
@@ -84,11 +84,11 @@ class DocumentProvider with ChangeNotifier {
       _list.add(Document(
           downloadUrl: downloadUrl, fileName: fileName, dateTime: uploadTime));
     }
-    _isDataFetched = true;
+    isDataFetched = true;
   }
 
   void signOut() {
     _list.clear();
-    _isDataFetched = false;
+    isDataFetched = false;
   }
 }
