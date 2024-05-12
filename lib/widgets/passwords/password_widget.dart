@@ -78,8 +78,7 @@ class PasswordWidget extends StatelessWidget {
                   builder: (_) => UpdatePasswordModal(
                       passwordProvider: passwordProvider,
                       encryptProvider: encryptProvider,
-                      passwordId: passwordObj.id,
-                      initialValue: passwordObj.password));
+                      passwordId: passwordObj.id));
             } else if (selectedValue == Options.copy) {
               await Clipboard.setData(
                   ClipboardData(text: passwordObj.password));

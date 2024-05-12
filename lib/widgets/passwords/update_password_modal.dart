@@ -7,14 +7,12 @@ class UpdatePasswordModal extends StatefulWidget {
   final PasswordProvider passwordProvider;
   final EncryptProvider encryptProvider;
   final String passwordId;
-  final String initialValue;
 
   const UpdatePasswordModal({
     super.key,
     required this.passwordProvider,
     required this.encryptProvider,
     required this.passwordId,
-    required this.initialValue,
   });
 
   @override
@@ -50,9 +48,8 @@ class _UpdatePasswordModalState extends State<UpdatePasswordModal> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Enter New Password",
-                  hintText: widget.initialValue,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {

@@ -68,7 +68,6 @@ class NoteProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetNotes(EncryptProvider encryptProvider) async {
-    if (isDataLoaded) return;
     _list.clear();
     final List<Note> notes = [];
     DatabaseReference ref = FirebaseDatabase.instance

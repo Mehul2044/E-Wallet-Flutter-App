@@ -67,7 +67,6 @@ class PasswordProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetPasswords(EncryptProvider encryptProvider) async {
-    if (isDataLoaded) return;
     _list.clear();
     final List<Password> passwordList = [];
     DatabaseReference ref = FirebaseDatabase.instance

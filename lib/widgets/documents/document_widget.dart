@@ -12,7 +12,9 @@ import 'package:provider/provider.dart';
 
 import '../../provider/document_provider.dart';
 
-enum Options { download, delete }
+import '../../widgets/documents/update_filename_dialog.dart';
+
+enum Options { download, rename, delete }
 
 class DocumentWidget extends StatefulWidget {
   final Document documentObj;
@@ -77,6 +79,7 @@ class _DocumentWidgetState extends State<DocumentWidget> {
         Provider.of<DocumentProvider>(context, listen: false);
 
     String fileName = widget.documentObj.fileName;
+    String documentId = widget.documentObj.id;
     String extension = fileName.split('.').last;
     IconData iconData = _getIconForFileExtension(extension);
 
@@ -107,7 +110,12 @@ class _DocumentWidgetState extends State<DocumentWidget> {
               _saveFile(
                   widget.documentObj.downloadUrl, widget.documentObj.fileName);
             } else if (selectedValue == Options.delete) {
-              await documentProvider.deleteFile(fileName);
+              await documentProvider.deleteFile(documentId);
+            } else if (selectedValue == Options.rename) {
+              await showDialog(
+                  context: context,
+                  builder: (_) => UpdateFilenameDialog(
+                      provider: documentProvider, documentId: documentId));
             }
           },
           itemBuilder: (_) => [
@@ -121,6 +129,15 @@ class _DocumentWidgetState extends State<DocumentWidget> {
                 ],
               ),
             ),
+            const PopupMenuItem(
+                value: Options.rename,
+                child: Row(
+                  children: [
+                    Icon(Icons.edit),
+                    SizedBox(width: 10),
+                    Text("Rename"),
+                  ],
+                )),
             const PopupMenuItem(
               value: Options.delete,
               child: Row(

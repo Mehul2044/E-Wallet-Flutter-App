@@ -12,7 +12,12 @@ class DocumentsScreen extends StatelessWidget {
 
   Future<void> _addFilesHandler(
       DocumentProvider documentProvider, BuildContext context) async {
-    await documentProvider.addFiles(context);
+    await documentProvider.addFromLocal(context);
+  }
+
+  Future<void> _scanDocumentHandler(
+      DocumentProvider documentProvider, BuildContext context) async {
+    await documentProvider.scanDocument(context);
   }
 
   void _addDocumentModal(
@@ -35,6 +40,7 @@ class DocumentsScreen extends StatelessWidget {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
+                    _scanDocumentHandler(documentProvider, context);
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(Icons.scanner),
@@ -84,14 +90,14 @@ class DocumentsScreen extends StatelessWidget {
                           children: [
                             FloatingActionButton.small(
                               tooltip: "Add from Gallery",
-                              onPressed: () {
-                                _addFilesHandler(documentProvider, context);
-                              },
+                              onPressed: () =>
+                                  _addFilesHandler(documentProvider, context),
                               child: const Icon(Icons.photo_library_outlined),
                             ),
                             FloatingActionButton.small(
                               tooltip: "Scan a New Document",
-                              onPressed: () {},
+                              onPressed: () => _scanDocumentHandler(
+                                  documentProvider, context),
                               child: const Icon(Icons.scanner),
                             ),
                           ],
@@ -119,7 +125,7 @@ class DocumentsScreen extends StatelessWidget {
                         direction: DismissDirection.horizontal,
                         confirmDismiss: (_) => _confirmDismissDelete(context),
                         onDismissed: (_) =>
-                            provider.deleteFile(provider.list[index].fileName),
+                            provider.deleteFile(provider.list[index].id),
                         child:
                             DocumentWidget(documentObj: provider.list[index]),
                       ),
